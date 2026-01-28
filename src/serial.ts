@@ -1,9 +1,10 @@
-import { SerialPort } from 'serialport';
-import { log, showError } from './utils';
+import { log, showError, showWarning } from './utils';
 import { getConfig } from './config';
 
-let port: SerialPort | null = null;
-let buffer = '';
+// Serial port stub - native serialport causes issues with VSCode extensions
+// TODO: implement via orchestrator API or use VSCode's built-in serial support
+
+let isPortOpen = false;
 
 export interface SerialCallbacks {
   onData?: (line: string) => void;
@@ -11,72 +12,32 @@ export interface SerialCallbacks {
   onClose?: () => void;
 }
 
-let callbacks: SerialCallbacks = {};
-
 export async function listPorts(): Promise<{ path: string; manufacturer?: string }[]> {
-  const ports = await SerialPort.list();
-  return ports.map(p => ({ path: p.path, manufacturer: p.manufacturer }));
+  showWarning('Serial port listing not available. Use orchestrator API instead.');
+  return [];
 }
 
 export function openPort(addr: string, baud?: number, cbs?: SerialCallbacks): boolean {
-  if (port?.isOpen) {
-    closePort();
-  }
-
-  callbacks = cbs || {};
-  const baudRate = baud || getConfig().defaultBaudRate;
-
-  try {
-    port = new SerialPort({ path: addr, baudRate });
-
-    port.on('data', (data: Buffer) => {
-      buffer += data.toString();
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || '';
-      lines.forEach(l => callbacks.onData?.(l));
-    });
-
-    port.on('error', err => {
-      log('error', `Serial error: ${err.message}`);
-      callbacks.onError?.(err);
-    });
-
-    port.on('close', () => {
-      log('info', 'Serial port closed');
-      callbacks.onClose?.();
-    });
-
-    log('info', `Opened serial port ${addr} at ${baudRate} baud`);
-    return true;
-  } catch (err) {
-    showError('Failed to open serial port', err);
-    return false;
-  }
+  showWarning('Direct serial port not available. Board communicates via orchestrator API.');
+  return false;
 }
 
 export function closePort() {
-  if (port?.isOpen) {
-    port.close();
-    port = null;
-    buffer = '';
-    log('info', 'Serial port closed');
-  }
+  isPortOpen = false;
 }
 
 export function isOpen(): boolean {
-  return !!port?.isOpen;
+  return isPortOpen;
 }
 
 export function write(data: string): boolean {
-  if (!port?.isOpen) return false;
-  port.write(data);
-  return true;
+  return false;
 }
 
 export function writeLine(data: string): boolean {
-  return write(data + '\n');
+  return false;
 }
 
-export function getPort(): SerialPort | null {
-  return port;
+export function getPort(): null {
+  return null;
 }
