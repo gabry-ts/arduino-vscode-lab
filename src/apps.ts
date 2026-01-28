@@ -29,7 +29,9 @@ export async function listApps(filter?: string, status?: string): Promise<AppInf
   const params: Record<string, string> = {};
   if (filter) params.filter = filter;
   if (status) params.status = status;
-  return get<AppInfo[]>('/apps', params);
+  const res = await get<AppInfo[] | { apps: AppInfo[] }>('/apps', params);
+  // API might return array directly or { apps: [...] }
+  return Array.isArray(res) ? res : (res?.apps || []);
 }
 
 export async function getApp(id: string): Promise<AppInfo> {
