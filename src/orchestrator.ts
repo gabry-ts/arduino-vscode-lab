@@ -1,8 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig, Method } from 'axios';
 import { getOrchestratorUrl } from './board';
-import { log, showError } from './utils';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const EventSource = require('eventsource');
+import { log, showError, showWarning } from './utils';
 
 function getBaseUrl(): string {
   const url = getOrchestratorUrl();
@@ -58,41 +56,14 @@ export interface SSEConnection {
   close: () => void;
 }
 
+// SSE disabled - eventsource module has bundling issues
+// TODO: implement with native http module or use polling
 export function sseConnect(path: string, handlers: SSEHandlers): SSEConnection {
-  const url = `${getBaseUrl()}/v1${path}`;
-  log('debug', `SSE connect: ${path}`);
+  log('warn', 'SSE not available - streaming features disabled');
+  showWarning('Streaming not available. Use refresh to update.');
 
-  const es = new EventSource(url);
-
-  es.onmessage = (e) => {
-    try {
-      const data = JSON.parse(e.data);
-      handlers.onEvent?.('message', data);
-    } catch {
-      handlers.onEvent?.('message', e.data);
-    }
-  };
-
-  es.onerror = () => {
-    handlers.onError?.(new Error('SSE connection error'));
-  };
-
-  const origAddEventListener = es.addEventListener.bind(es);
-  ['progress', 'message', 'error', 'log', 'cpu', 'mem', 'disk', 'app', 'restarting'].forEach(evt => {
-    origAddEventListener(evt, ((e: MessageEvent) => {
-      try {
-        const data = JSON.parse(e.data);
-        handlers.onEvent?.(evt, data);
-      } catch {
-        handlers.onEvent?.(evt, e.data);
-      }
-    }) as EventListener);
-  });
-
+  // Return dummy connection
   return {
-    close: () => {
-      es.close();
-      handlers.onClose?.();
-    }
+    close: () => {}
   };
 }
