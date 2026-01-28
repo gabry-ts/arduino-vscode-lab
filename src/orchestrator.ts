@@ -1,7 +1,8 @@
 import axios, { AxiosError, AxiosRequestConfig, Method } from 'axios';
 import { getOrchestratorUrl } from './board';
 import { log, showError } from './utils';
-import EventSource from 'eventsource';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const EventSource = require('eventsource');
 
 function getBaseUrl(): string {
   const url = getOrchestratorUrl();
