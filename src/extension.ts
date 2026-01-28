@@ -203,7 +203,11 @@ async function cmdShowStatus() {
 }
 
 async function cmdRefreshApps() {
-  await appProvider.fetchApps();
+  try {
+    await appProvider.fetchApps();
+  } catch (err) {
+    showError('Failed to refresh apps', err);
+  }
 }
 
 async function cmdCreateApp() {
@@ -224,21 +228,21 @@ async function cmdCreateApp() {
 async function cmdDeleteApp(item?: { app?: { id: string } }) {
   if (!isConnected()) return showError('Not connected');
 
-  let id = item?.app?.id;
-  if (!id) {
-    const apps = await listApps();
-    const pick = await vscode.window.showQuickPick(
-      apps.map(a => ({ label: a.name, id: a.id })),
-      { placeHolder: 'Select app to delete' }
-    );
-    id = pick?.id;
-  }
-  if (!id) return;
-
-  const confirm = await vscode.window.showWarningMessage('Delete this app?', 'Yes', 'No');
-  if (confirm !== 'Yes') return;
-
   try {
+    let id = item?.app?.id;
+    if (!id) {
+      const apps = await listApps();
+      const pick = await vscode.window.showQuickPick(
+        apps.map(a => ({ label: a.name, id: a.id })),
+        { placeHolder: 'Select app to delete' }
+      );
+      id = pick?.id;
+    }
+    if (!id) return;
+
+    const confirm = await vscode.window.showWarningMessage('Delete this app?', 'Yes', 'No');
+    if (confirm !== 'Yes') return;
+
     await deleteApp(id);
     showInfo('App deleted');
     appProvider.fetchApps();
@@ -250,56 +254,68 @@ async function cmdDeleteApp(item?: { app?: { id: string } }) {
 async function cmdStartApp(item?: { app?: { id: string } }) {
   if (!isConnected()) return showError('Not connected');
 
-  let id = item?.app?.id;
-  if (!id) {
-    const apps = await listApps();
-    const pick = await vscode.window.showQuickPick(
-      apps.filter(a => a.status === 'stopped').map(a => ({ label: a.name, id: a.id })),
-      { placeHolder: 'Select app to start' }
-    );
-    id = pick?.id;
-  }
-  if (!id) return;
+  try {
+    let id = item?.app?.id;
+    if (!id) {
+      const apps = await listApps();
+      const pick = await vscode.window.showQuickPick(
+        apps.filter(a => a.status === 'stopped').map(a => ({ label: a.name, id: a.id })),
+        { placeHolder: 'Select app to start' }
+      );
+      id = pick?.id;
+    }
+    if (!id) return;
 
-  await startAppWithProgress(id);
-  appProvider.fetchApps();
+    await startAppWithProgress(id);
+    appProvider.fetchApps();
+  } catch (err) {
+    showError('Failed to start app', err);
+  }
 }
 
 async function cmdStopApp(item?: { app?: { id: string } }) {
   if (!isConnected()) return showError('Not connected');
 
-  let id = item?.app?.id;
-  if (!id) {
-    const apps = await listApps();
-    const pick = await vscode.window.showQuickPick(
-      apps.filter(a => a.status === 'running').map(a => ({ label: a.name, id: a.id })),
-      { placeHolder: 'Select app to stop' }
-    );
-    id = pick?.id;
-  }
-  if (!id) return;
+  try {
+    let id = item?.app?.id;
+    if (!id) {
+      const apps = await listApps();
+      const pick = await vscode.window.showQuickPick(
+        apps.filter(a => a.status === 'running').map(a => ({ label: a.name, id: a.id })),
+        { placeHolder: 'Select app to stop' }
+      );
+      id = pick?.id;
+    }
+    if (!id) return;
 
-  await stopAppWithProgress(id);
-  appProvider.fetchApps();
+    await stopAppWithProgress(id);
+    appProvider.fetchApps();
+  } catch (err) {
+    showError('Failed to stop app', err);
+  }
 }
 
 async function cmdShowAppLogs(item?: { app?: { id: string } }) {
   if (!isConnected()) return showError('Not connected');
 
-  let id = item?.app?.id;
-  if (!id) {
-    const apps = await listApps();
-    const pick = await vscode.window.showQuickPick(
-      apps.map(a => ({ label: a.name, id: a.id })),
-      { placeHolder: 'Select app' }
-    );
-    id = pick?.id;
-  }
-  if (!id) return;
+  try {
+    let id = item?.app?.id;
+    if (!id) {
+      const apps = await listApps();
+      const pick = await vscode.window.showQuickPick(
+        apps.map(a => ({ label: a.name, id: a.id })),
+        { placeHolder: 'Select app' }
+      );
+      id = pick?.id;
+    }
+    if (!id) return;
 
-  logsChannel.show();
-  logsChannel.appendLine(`--- Logs for app ${id} ---`);
-  streamLogs(id, line => logsChannel.appendLine(line));
+    logsChannel.show();
+    logsChannel.appendLine(`--- Logs for app ${id} ---`);
+    streamLogs(id, line => logsChannel.appendLine(line));
+  } catch (err) {
+    showError('Failed to show app logs', err);
+  }
 }
 
 async function cmdShowAppInfo(item?: { app?: { id: string } }) {
@@ -381,7 +397,11 @@ async function cmdCompileUpload() {
 }
 
 async function cmdRefreshBricks() {
-  await brickProvider.fetchBricks();
+  try {
+    await brickProvider.fetchBricks();
+  } catch (err) {
+    showError('Failed to refresh bricks', err);
+  }
 }
 
 async function cmdShowBrickInfo(item?: { brick?: { id: string } }) {
@@ -520,35 +540,43 @@ async function cmdDeleteRemote(item?: { entry?: { path: string } }) {
 async function cmdWifiConnect() {
   if (!isConnected()) return showError('Not connected');
 
-  const networks = await listSsids();
-  if (networks.length === 0) {
-    return showWarning('No WiFi networks found');
-  }
+  try {
+    const networks = await listSsids();
+    if (networks.length === 0) {
+      return showWarning('No WiFi networks found');
+    }
 
-  const pick = await vscode.window.showQuickPick(
-    networks.map(n => ({ label: n.ssid })),
-    { placeHolder: 'Select network' }
-  );
-  if (!pick) return;
+    const pick = await vscode.window.showQuickPick(
+      networks.map(n => ({ label: n.ssid })),
+      { placeHolder: 'Select network' }
+    );
+    if (!pick) return;
 
-  const pass = await vscode.window.showInputBox({ prompt: 'WiFi password', password: true });
-  if (!pass) return;
+    const pass = await vscode.window.showInputBox({ prompt: 'WiFi password', password: true });
+    if (!pass) return;
 
-  const ok = await wifiConnect(pick.label, pass);
-  if (ok) {
-    showInfo('Connected to WiFi');
-  } else {
-    showError('Failed to connect to WiFi');
+    const ok = await wifiConnect(pick.label, pass);
+    if (ok) {
+      showInfo('Connected to WiFi');
+    } else {
+      showError('Failed to connect to WiFi');
+    }
+  } catch (err) {
+    showError('WiFi connection failed', err);
   }
 }
 
 async function cmdWifiStatus() {
   if (!isConnected()) return showError('Not connected');
-  const status = await wifiStatus();
-  if (status.connected) {
-    showInfo(`WiFi: ${status.ssid} (${status.ip})`);
-  } else {
-    showInfo('WiFi: Not connected');
+  try {
+    const status = await wifiStatus();
+    if (status.connected) {
+      showInfo(`WiFi: ${status.ssid} (${status.ip})`);
+    } else {
+      showInfo('WiFi: Not connected');
+    }
+  } catch (err) {
+    showError('Failed to get WiFi status', err);
   }
 }
 
@@ -624,20 +652,24 @@ async function cmdRemoveLibrary() {
 }
 
 async function cmdListLibraries() {
-  if (!isConnected()) return showError('Not connected');
+  if (!isConnected()) return showError('Not connected to board. Use "Arduino Q: Connect" first.');
 
-  const apps = await listApps();
-  const appPick = await vscode.window.showQuickPick(
-    apps.map(a => ({ label: a.name, id: a.id })),
-    { placeHolder: 'Select app' }
-  );
-  if (!appPick) return;
+  try {
+    const apps = await listApps();
+    const appPick = await vscode.window.showQuickPick(
+      apps.map(a => ({ label: a.name, id: a.id })),
+      { placeHolder: 'Select app' }
+    );
+    if (!appPick) return;
 
-  const libs = await listAppLibs(appPick.id);
-  if (libs.length === 0) {
-    showInfo('No libraries installed');
-  } else {
-    vscode.window.showInformationMessage(`Libraries: ${libs.join(', ')}`);
+    const libs = await listAppLibs(appPick.id);
+    if (libs.length === 0) {
+      showInfo('No libraries installed');
+    } else {
+      vscode.window.showInformationMessage(`Libraries: ${libs.join(', ')}`);
+    }
+  } catch (err) {
+    showError('Failed to list libraries', err);
   }
 }
 
