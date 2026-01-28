@@ -1,0 +1,445 @@
+{
+  "name": "arduino-q-vscode",
+  "displayName": "Arduino Q",
+  "description": "VSCode extension for Arduino UNO Q development",
+  "version": "0.1.0",
+  "publisher": "arduino",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "icon": "icon.png",
+  "activationEvents": [
+    "onView:arduinoQ.apps",
+    "onView:arduinoQ.bricks",
+    "onView:arduinoQ.files",
+    "onFileSystem:arduinoq",
+    "workspaceContains:**/*.ino"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "arduinoQ",
+          "title": "Arduino Q",
+          "icon": "$(circuit-board)"
+        }
+      ]
+    },
+    "views": {
+      "arduinoQ": [
+        {
+          "id": "arduinoQ.apps",
+          "name": "Apps",
+          "when": "arduinoQ.connected"
+        },
+        {
+          "id": "arduinoQ.bricks",
+          "name": "Bricks",
+          "when": "arduinoQ.connected"
+        },
+        {
+          "id": "arduinoQ.files",
+          "name": "Files",
+          "when": "arduinoQ.connected"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "arduinoQ.apps",
+        "contents": "Not connected to a board.\n[Connect to Board](command:arduinoQ.connect)",
+        "when": "!arduinoQ.connected"
+      }
+    ],
+    "commands": [
+      {
+        "command": "arduinoQ.detectBoards",
+        "title": "Arduino Q: Detect Boards"
+      },
+      {
+        "command": "arduinoQ.selectBoard",
+        "title": "Arduino Q: Select Board"
+      },
+      {
+        "command": "arduinoQ.connect",
+        "title": "Arduino Q: Connect"
+      },
+      {
+        "command": "arduinoQ.disconnect",
+        "title": "Arduino Q: Disconnect"
+      },
+      {
+        "command": "arduinoQ.showStatus",
+        "title": "Arduino Q: Show Status"
+      },
+      {
+        "command": "arduinoQ.refreshApps",
+        "title": "Arduino Q: Refresh Apps",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "arduinoQ.createApp",
+        "title": "Arduino Q: Create App",
+        "icon": "$(add)"
+      },
+      {
+        "command": "arduinoQ.deleteApp",
+        "title": "Arduino Q: Delete App",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "arduinoQ.startApp",
+        "title": "Arduino Q: Start App",
+        "icon": "$(play)"
+      },
+      {
+        "command": "arduinoQ.stopApp",
+        "title": "Arduino Q: Stop App",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "arduinoQ.showAppLogs",
+        "title": "Arduino Q: Show App Logs",
+        "icon": "$(output)"
+      },
+      {
+        "command": "arduinoQ.showAppInfo",
+        "title": "Arduino Q: Show App Info",
+        "icon": "$(info)"
+      },
+      {
+        "command": "arduinoQ.openSerialMonitor",
+        "title": "Arduino Q: Open Serial Monitor"
+      },
+      {
+        "command": "arduinoQ.closeSerialMonitor",
+        "title": "Arduino Q: Close Serial Monitor"
+      },
+      {
+        "command": "arduinoQ.clearSerialMonitor",
+        "title": "Arduino Q: Clear Serial Monitor"
+      },
+      {
+        "command": "arduinoQ.compile",
+        "title": "Arduino Q: Compile",
+        "icon": "$(check)"
+      },
+      {
+        "command": "arduinoQ.upload",
+        "title": "Arduino Q: Upload",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "arduinoQ.compileUpload",
+        "title": "Arduino Q: Compile & Upload",
+        "icon": "$(rocket)"
+      },
+      {
+        "command": "arduinoQ.verify",
+        "title": "Arduino Q: Verify"
+      },
+      {
+        "command": "arduinoQ.refreshBricks",
+        "title": "Arduino Q: Refresh Bricks",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "arduinoQ.showBrickInfo",
+        "title": "Arduino Q: Show Brick Info"
+      },
+      {
+        "command": "arduinoQ.addBrick",
+        "title": "Arduino Q: Add Brick",
+        "icon": "$(add)"
+      },
+      {
+        "command": "arduinoQ.removeBrick",
+        "title": "Arduino Q: Remove Brick",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "arduinoQ.configureBrick",
+        "title": "Arduino Q: Configure Brick",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "arduinoQ.refreshFiles",
+        "title": "Arduino Q: Refresh Files",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "arduinoQ.openRemoteFile",
+        "title": "Arduino Q: Open Remote File"
+      },
+      {
+        "command": "arduinoQ.createRemoteFile",
+        "title": "Arduino Q: Create Remote File",
+        "icon": "$(new-file)"
+      },
+      {
+        "command": "arduinoQ.createRemoteFolder",
+        "title": "Arduino Q: Create Remote Folder",
+        "icon": "$(new-folder)"
+      },
+      {
+        "command": "arduinoQ.renameRemote",
+        "title": "Arduino Q: Rename"
+      },
+      {
+        "command": "arduinoQ.deleteRemote",
+        "title": "Arduino Q: Delete",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "arduinoQ.wifiConnect",
+        "title": "Arduino Q: WiFi Connect"
+      },
+      {
+        "command": "arduinoQ.wifiStatus",
+        "title": "Arduino Q: WiFi Status"
+      },
+      {
+        "command": "arduinoQ.searchLibraries",
+        "title": "Arduino Q: Search Libraries"
+      },
+      {
+        "command": "arduinoQ.addLibrary",
+        "title": "Arduino Q: Add Library"
+      },
+      {
+        "command": "arduinoQ.removeLibrary",
+        "title": "Arduino Q: Remove Library"
+      },
+      {
+        "command": "arduinoQ.listLibraries",
+        "title": "Arduino Q: List Libraries"
+      },
+      {
+        "command": "arduinoQ.showVersion",
+        "title": "Arduino Q: Show Version"
+      },
+      {
+        "command": "arduinoQ.checkUpdates",
+        "title": "Arduino Q: Check Updates"
+      },
+      {
+        "command": "arduinoQ.applyUpdates",
+        "title": "Arduino Q: Apply Updates"
+      },
+      {
+        "command": "arduinoQ.setBoardName",
+        "title": "Arduino Q: Set Board Name"
+      },
+      {
+        "command": "arduinoQ.setKeyboard",
+        "title": "Arduino Q: Set Keyboard Layout"
+      },
+      {
+        "command": "arduinoQ.showResources",
+        "title": "Arduino Q: Show Resources"
+      },
+      {
+        "command": "arduinoQ.openTerminal",
+        "title": "Arduino Q: Open Terminal"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "arduinoQ.refreshApps",
+          "when": "view == arduinoQ.apps",
+          "group": "navigation"
+        },
+        {
+          "command": "arduinoQ.createApp",
+          "when": "view == arduinoQ.apps",
+          "group": "navigation"
+        },
+        {
+          "command": "arduinoQ.refreshBricks",
+          "when": "view == arduinoQ.bricks",
+          "group": "navigation"
+        },
+        {
+          "command": "arduinoQ.addBrick",
+          "when": "view == arduinoQ.bricks",
+          "group": "navigation"
+        },
+        {
+          "command": "arduinoQ.refreshFiles",
+          "when": "view == arduinoQ.files",
+          "group": "navigation"
+        },
+        {
+          "command": "arduinoQ.createRemoteFile",
+          "when": "view == arduinoQ.files",
+          "group": "navigation"
+        },
+        {
+          "command": "arduinoQ.createRemoteFolder",
+          "when": "view == arduinoQ.files",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "arduinoQ.startApp",
+          "when": "view == arduinoQ.apps && viewItem == app-stopped",
+          "group": "inline"
+        },
+        {
+          "command": "arduinoQ.stopApp",
+          "when": "view == arduinoQ.apps && viewItem == app-running",
+          "group": "inline"
+        },
+        {
+          "command": "arduinoQ.showAppLogs",
+          "when": "view == arduinoQ.apps",
+          "group": "inline"
+        },
+        {
+          "command": "arduinoQ.deleteApp",
+          "when": "view == arduinoQ.apps"
+        },
+        {
+          "command": "arduinoQ.showAppInfo",
+          "when": "view == arduinoQ.apps"
+        },
+        {
+          "command": "arduinoQ.configureBrick",
+          "when": "view == arduinoQ.bricks && viewItem == app-brick",
+          "group": "inline"
+        },
+        {
+          "command": "arduinoQ.removeBrick",
+          "when": "view == arduinoQ.bricks && viewItem == app-brick"
+        },
+        {
+          "command": "arduinoQ.showBrickInfo",
+          "when": "view == arduinoQ.bricks"
+        },
+        {
+          "command": "arduinoQ.renameRemote",
+          "when": "view == arduinoQ.files"
+        },
+        {
+          "command": "arduinoQ.deleteRemote",
+          "when": "view == arduinoQ.files"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "arduinoQ.compile",
+          "when": "resourceExtname == .ino",
+          "group": "navigation"
+        },
+        {
+          "command": "arduinoQ.upload",
+          "when": "resourceExtname == .ino",
+          "group": "navigation"
+        },
+        {
+          "command": "arduinoQ.compileUpload",
+          "when": "resourceExtname == .ino",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "arduinoQ.compile",
+          "when": "resourceExtname == .ino"
+        },
+        {
+          "command": "arduinoQ.upload",
+          "when": "resourceExtname == .ino"
+        },
+        {
+          "command": "arduinoQ.compileUpload",
+          "when": "resourceExtname == .ino"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "arduinoQ.detectBoards",
+        "key": "ctrl+alt+a d",
+        "mac": "cmd+alt+a d"
+      },
+      {
+        "command": "arduinoQ.compile",
+        "key": "ctrl+alt+a c",
+        "mac": "cmd+alt+a c"
+      },
+      {
+        "command": "arduinoQ.upload",
+        "key": "ctrl+alt+a u",
+        "mac": "cmd+alt+a u"
+      },
+      {
+        "command": "arduinoQ.openSerialMonitor",
+        "key": "ctrl+alt+a m",
+        "mac": "cmd+alt+a m"
+      },
+      {
+        "command": "arduinoQ.showStatus",
+        "key": "ctrl+alt+a s",
+        "mac": "cmd+alt+a s"
+      }
+    ],
+    "configuration": {
+      "title": "Arduino Q",
+      "properties": {
+        "arduinoQ.arduinoCliPath": {
+          "type": "string",
+          "default": "arduino-cli",
+          "description": "Path to Arduino CLI executable"
+        },
+        "arduinoQ.defaultBaudRate": {
+          "type": "number",
+          "default": 9600,
+          "enum": [300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200],
+          "description": "Default baud rate for serial monitor"
+        },
+        "arduinoQ.autoConnect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-connect to board on startup"
+        },
+        "arduinoQ.serialMonitor.scrollback": {
+          "type": "number",
+          "default": 1000,
+          "description": "Number of lines to keep in serial monitor"
+        },
+        "arduinoQ.logLevel": {
+          "type": "string",
+          "default": "info",
+          "enum": ["debug", "info", "warn", "error"],
+          "description": "Log level for output channel"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "watch": "npm run compile -- --watch",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "eventsource": "^2.0.2",
+    "serialport": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.19.8",
+    "typescript": "^5.3.2",
+    "@vscode/vsce": "^2.22.0"
+  }
+}
