@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig, Method } from 'axios';
 import { getOrchestratorUrl } from './board';
 import { log, showError } from './utils';
-import { EventSource } from 'eventsource';
+import EventSource from 'eventsource';
 
 function getBaseUrl(): string {
   const url = getOrchestratorUrl();

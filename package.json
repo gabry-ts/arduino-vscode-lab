@@ -2,7 +2,7 @@
   "name": "arduino-q-vscode",
   "displayName": "Arduino Q",
   "description": "VSCode extension for Arduino UNO Q development",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "publisher": "arduino",
   "repository": {
     "type": "git",
